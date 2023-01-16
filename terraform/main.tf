@@ -55,6 +55,13 @@ module "activate_service_apis" {
   
 }
 
+resource "time_sleep" "sleep_after_activate_service_apis" {
+  create_duration = "60s"
+
+  depends_on = [
+    module.activate_service_apis
+  ]
+}
 data "google_compute_default_service_account" "default" {
   project = data.google_project.project.project_id
   
@@ -62,7 +69,7 @@ data "google_compute_default_service_account" "default" {
 
 resource "google_project_iam_member" "storage_access_role" {
   project = var.project_id
-  role    = "roles/roles/storage.ObjectViewer"
+  role    = "roles/storage.ObjectViewer"
   member  = "serviceAccount:${data.google_compute_default_service_account.default.email}"
   depends_on = [data.google_compute_default_service_account.default]
 }
@@ -155,7 +162,7 @@ resource "google_cloud_run_service" "chat_notify_service" {
 resource "google_project_iam_binding" "pubsub_binding" {
   project = data.google_project.project.project_id
   role               = "roles/iam.serviceAccountTokenCreator"
-  members  =  ["serviceAccount:${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"]
+  members  =  ["serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"]
   depends_on = [data.google_compute_default_service_account.default]
 }
 
@@ -171,7 +178,7 @@ resource "google_cloud_run_service_iam_binding" "pubsub-cr-binding" {
   service = google_cloud_run_service.chat_notify_service.name
   role = "roles/run.invoker"
   members = [
-    "user:jane@example.com",
+    "serviceAccount:cloud-run-pubsub-invoker@${project-id}.iam.gserviceaccount.com",
   ]
 }
 

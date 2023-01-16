@@ -16,7 +16,7 @@ cd terraform
 export TF_VAR_project_id=$(gcloud config get-value project)
 sed -i "s|PROJECT_ID|$TF_VAR_project_id|g" chatnotifier.yaml
 export TF_VAR_chat_space_webhook="XXXXXX"
-export TF_VAR_region=us-east-1
+export TF_VAR_region=us-east1
 terraform init
 terraform apply --auto-approve
 
