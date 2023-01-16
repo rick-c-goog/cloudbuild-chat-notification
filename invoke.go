@@ -1,0 +1,52 @@
+module invoke
+
+go 1.19
+│16-Jan 01:21 admin_ in ⎔ rick-devops-01 ⪧ ~/cloud-build-samples/run-example-builddeploy ⎈N/A Ⴤ [main] ക
+└─⪧ ls
+cloudbuild-archive.yaml  cloudbuild.yaml  Dockerfile  go.mod  invoke.go  README.md  script.sh
+│16-Jan 01:22 admin_ in ⎔ rick-devops-01 ⪧ ~/cloud-build-samples/run-example-builddeploy ⎈N/A Ⴤ [main] ക
+└─⪧ cat invoke.go
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package main
+
+import (
+        "fmt"
+        "log"
+        "net/http"
+        "os"
+        "os/exec"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+        cmd := exec.CommandContext(r.Context(), "/bin/sh", "script.sh")
+        cmd.Stderr = os.Stderr
+        out, err := cmd.Output()
+        if err != nil {
+                w.WriteHeader(500)
+        }
+        w.Write(out)
+}
+
+func main() {
+        http.HandleFunc("/", handler)
+
+        port := os.Getenv("PORT")
+        if port == "" {
+                port = "8080"
+        }
+
+        log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+}

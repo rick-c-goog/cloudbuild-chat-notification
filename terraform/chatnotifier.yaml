@@ -1,0 +1,13 @@
+apiVersion: cloud-build-notifiers/v1
+kind: GoogleChatNotifier
+metadata:
+  name: example-googlechat-notifier
+spec:
+  notification:
+    filter: build.status == Build.Status.SUCCESS
+    delivery:
+      webhookUrl:
+        secretRef: webhook-url
+  secrets:
+  - name: webhook-url
+    value: projects/PROJECT_ID/secrets/space_webhook/versions/latest
