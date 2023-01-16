@@ -117,7 +117,7 @@ resource "google_storage_bucket" "chat_storage_bucket" {
 }
 
 resource "google_storage_bucket_object" "chat-config-file" {
-  name   = "chat-nofify-config"
+  name   = local.chat_nofity_config_file
   source = local.chat_nofity_config_file
   bucket = "cloudbuild-chatnotifier"
 }
