@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 cd terraform
-TF_VAR_project_id=$(gcloud config get-value project)
+export TF_VAR_project_id=$(gcloud config get-value project)
 sed -i "s|PROJECT_ID|$TF_VAR_project_id|g" chatnotifier.yaml
-TF_VAR_chat_space_webhook="XXXXXX"
-TF_VAR_region=us-east-1
+export TF_VAR_chat_space_webhook="XXXXXX"
+export TF_VAR_region=us-east-1
 terraform init
 terraform apply --auto-approve
 

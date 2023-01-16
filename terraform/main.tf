@@ -27,7 +27,7 @@ locals {
 
   message_retention_duration = "86600s"
 }
-}
+
 
 data "google_project" "project" {
   project_id = var.project_id
@@ -47,7 +47,7 @@ module "activate_service_apis" {
     "cloudrun.googleapis.com",
     "pubsub.googleapis.com",
     "secretmanager.googleapis.com",
-    containerregistry.googleapis.com,
+    "containerregistry.googleapis.com",
     "cloudbuild.googleapis.com"
   ]
 
@@ -82,7 +82,7 @@ resource "google_secret_manager_secret" "webhook-secret" {
 
 
 resource "google_secret_manager_secret_version" "secret-version-basic" {
-  secret = google_secret_manager_secret.webhook.secret.id
+  secret = google_secret_manager_secret.webhook-secret.id
 
   secret_data = var.chat_space_webhook
 }
@@ -103,7 +103,7 @@ resource "google_secret_manager_secret_iam_binding" "secret-iam-binding" {
 3. Chat notification config file
  *****************************************/
 resource "google_storage_bucket" "chat_storage_bucket" {
-    name     = locals.chat_storage_bucket
+    name     = local.chat_storage_bucket
     location = var.region
     uniform_bucket_level_access       = true
     force_destroy                     = true
@@ -111,7 +111,7 @@ resource "google_storage_bucket" "chat_storage_bucket" {
 
 resource "google_storage_bucket_object" "chat-config-file" {
   name   = "chat-nofify-config"
-  source = locals.chat_nofity_config_file
+  source = local.chat_nofity_config_file
   bucket = "cloudbuild-chatnotifier"
 }
 
@@ -121,7 +121,7 @@ resource "google_storage_bucket_object" "chat-config-file" {
 
 
 resource "google_cloud_run_service" "chat_notify_service" {
-  name     = locals.cr_chat_notifiy
+  name     = local.cr_chat_notifiy
   location = var.region
 
   template {
@@ -130,7 +130,7 @@ resource "google_cloud_run_service" "chat_notify_service" {
         image = "us-east1-docker.pkg.dev/gcb-release/cloud-build-notifiers/googlechat:latest"
         env {
           name  = "CONFIG_PATH"
-          value = "gs://${google_storage_bucket.chat_storage_bucket}/${locals.chat_nofity_config_file}"
+          value = "gs://${google_storage_bucket.chat_storage_bucket}/${local.chat_nofity_config_file}"
         }
         env {
           name  = "PROJECT_ID"
@@ -159,7 +159,7 @@ resource "google_project_iam_binding" "pubsub_binding" {
 }
 
 resource "google_service_account" "pubsub_service_account" {
-  account_id   = locals.sa_pubsub_invoker
+  account_id   = local.sa_pubsub_invoker
   display_name = "Cloud Run Pub/Sub Invoker"
 }
 
@@ -176,7 +176,7 @@ resource "google_cloud_run_service_iam_binding" "pubsub-cr-binding" {
 
 #7 pubsub topic
 resource "google_pubsub_topic" "chat_notify_topic" {
-  name = locals.pubsub_chat_notify_topic
+  name = local.pubsub_chat_notify_topic
 
   labels = {
     channel = "cloud build run"

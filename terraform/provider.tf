@@ -12,13 +12,8 @@ terraform {
       source  = "hashicorp/google"
       version = "=3.90.0"
     }
-    google-beta = {
-      source  = "hashicorp/google"
-      version = "=3.90.0"
-    }
-
   }
-}
+ }
 
 provider "google" {
   project = var.project_id
