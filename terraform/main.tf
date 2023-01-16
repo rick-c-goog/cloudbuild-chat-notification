@@ -130,7 +130,7 @@ resource "google_cloud_run_service" "chat_notify_service" {
         image = "us-east1-docker.pkg.dev/gcb-release/cloud-build-notifiers/googlechat:latest"
         env {
           name  = "CONFIG_PATH"
-          value = "gs://${google_storage_bucket.chat_storage_bucket}/${local.chat_nofity_config_file}"
+          value = "gs://${local.chat_storage_bucket}/${local.chat_nofity_config_file}"
         }
         env {
           name  = "PROJECT_ID"
@@ -147,6 +147,7 @@ resource "google_cloud_run_service" "chat_notify_service" {
   }
 
   autogenerate_revision_name = true
+  depends_on=[google_storage_bucket.chat_storage_bucket,google_storage_bucket_object.chat-config-file]
 
 }
 
@@ -182,7 +183,7 @@ resource "google_pubsub_topic" "chat_notify_topic" {
     channel = "cloud build run"
   }
 
-  message_retention_duration = "86600s"
+  #message_retention_duration = "86600s"
 }
 
 #8 pubsub push subscription, 
@@ -197,13 +198,13 @@ resource "google_pubsub_subscription" "example" {
   }
 
   push_config {
-    push_endpoint = google_cloud_run_service.chat_notify_service.url
+    push_endpoint = google_cloud_run_service.chat_notify_service.status[0].url
 
     attributes = {
       x-goog-version = "v1"
     }
-    oidc_token={
-        service_account_email="cloud-run-pubsub-invoker@${var.projenct_id}.iam.gserviceaccount.com"
+    oidc_token {
+        service_account_email="cloud-run-pubsub-invoker@${var.project_id}.iam.gserviceaccount.com"
     }
   }
 }
