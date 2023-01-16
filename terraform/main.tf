@@ -76,10 +76,10 @@ resource "google_project_iam_member" "storage_access_role" {
 
 #2. secret manager, secret with webhook data, IAM permission for compute service account
 resource "google_secret_manager_secret" "webhook-secret" {
-  secret_id = "chat-webhook"
+  secret_id = "space_webhook"
 
   labels = {
-    label = "chat-webhook"
+    label = "spacewebhook"
   }
 
   replication {
@@ -201,7 +201,7 @@ resource "google_pubsub_subscription" "example" {
   ack_deadline_seconds = 20
 
   labels = {
-    channel = "cloud build status"
+    channel = "cloudstatus"
   }
 
   push_config {
