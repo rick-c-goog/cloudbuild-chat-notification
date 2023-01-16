@@ -44,7 +44,7 @@ module "activate_service_apis" {
     "orgpolicy.googleapis.com",
     "compute.googleapis.com",
     "storage.googleapis.com",
-    "cloudrun.googleapis.com",
+    "run.googleapis.com",
     "pubsub.googleapis.com",
     "secretmanager.googleapis.com",
     "containerregistry.googleapis.com",
@@ -69,7 +69,7 @@ data "google_compute_default_service_account" "default" {
 
 resource "google_project_iam_member" "storage_access_role" {
   project = var.project_id
-  role    = "roles/storage.ObjectViewer"
+  role    = "roles/storage.objectViewer"
   member  = "serviceAccount:${data.google_compute_default_service_account.default.email}"
   depends_on = [data.google_compute_default_service_account.default]
 }
@@ -178,7 +178,7 @@ resource "google_cloud_run_service_iam_binding" "pubsub-cr-binding" {
   service = google_cloud_run_service.chat_notify_service.name
   role = "roles/run.invoker"
   members = [
-    "serviceAccount:cloud-run-pubsub-invoker@${project-id}.iam.gserviceaccount.com",
+    "serviceAccount:cloud-run-pubsub-invoker@${var.project_id}.iam.gserviceaccount.com",
   ]
 }
 
@@ -187,7 +187,7 @@ resource "google_pubsub_topic" "chat_notify_topic" {
   name = local.pubsub_chat_notify_topic
 
   labels = {
-    channel = "cloud build run"
+    channel = "cr-test"
   }
 
   #message_retention_duration = "86600s"
