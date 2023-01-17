@@ -27,7 +27,7 @@ replace the chat space webhook copied from step 1
 ```shellcript
 cd $HOME
 cd cloudbuild-chat-notification/
-./script
+./script.sh
 ```
 
 4. Test cloud build example
