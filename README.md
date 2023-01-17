@@ -1,7 +1,8 @@
 # cloudbuild-chat-notification
 Cloud Build can notify you of build updates by sending you notifications to desired channels, such as Slack or your SMTP server. This sample shows how to configure notifications using the Google Chat notifier.
 ## key components:
-- [Google documentation](https://cloud.google.com/build/docs/configuring-notifications/configure-googlechat#using_cel_to_filter_build_events)
+- Cloud Run service
+- Pub/Sub
 
 # Usage Instructions
 
